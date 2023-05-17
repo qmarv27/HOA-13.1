@@ -1,0 +1,26 @@
+---
+- hosts: localhost
+  become: true
+  pre_tasks:
+
+    - name: Install Updates (Ubuntu)
+      apt:
+        upgrade: dist
+        update_cache: yes
+      when: ansible_distribution == "Ubuntu"
+
+    - name: Install NTP
+      apt:
+        name: ntp
+        update_cache: yes
+      when: ansible_distribution == "Ubuntu"
+
+    - name: Verify Installation
+      shell: 'sntp --version'
+      register: command_output
+    - debug:
+            var: command_output.stdout_lines
+
+    - name: Switching to an NTP server closest to our location
+      replace:
+        path: /
